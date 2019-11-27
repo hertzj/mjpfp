@@ -6,7 +6,7 @@ import axios from 'axios';
 import moment from 'moment';
 
 class Create extends Component {
-    constructor() {
+    constructor(props) {
         super();
     }
 
@@ -19,7 +19,7 @@ class Create extends Component {
         inputs.forEach(input => {
             input.value = '';
         })
-
+        this.props.history.push('/')
     }
 
     render() {

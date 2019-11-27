@@ -56425,7 +56425,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class Create extends react__WEBPACK_IMPORTED_MODULE_1__["Component"] {
-  constructor() {
+  constructor(props) {
     super();
   }
 
@@ -56441,6 +56441,7 @@ class Create extends react__WEBPACK_IMPORTED_MODULE_1__["Component"] {
     inputs.forEach(input => {
       input.value = '';
     });
+    this.props.history.push('/');
   }
 
   render() {
@@ -56518,6 +56519,8 @@ class Edit extends react__WEBPACK_IMPORTED_MODULE_1__["Component"] {
       date
     };
     axios__WEBPACK_IMPORTED_MODULE_4___default.a.put(`/api/events/${id}`, newData); // need to include payload
+
+    this.props.history.push('/');
   }
 
   render() {

@@ -31,7 +31,7 @@ class Edit extends Component {
         }
 
         axios.put(`/api/events/${id}`, newData) // need to include payload
-        
+        this.props.history.push('/')
     }
 
     render() {
