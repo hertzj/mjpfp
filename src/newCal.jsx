@@ -1,4 +1,3 @@
-import { createStore } from 'redux';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import ReactRouterDOM, { HashRouter, Link, Route, Switch } from 'react-router-dom';
@@ -35,17 +34,15 @@ class Calendar extends Component {
         this.renderDays();
         this.fetchEvents();
         // console.log(this.state.events)
-        
-        console.log(this.state)
     }
     // componentWillUnmount() {
     //     this.unsubscribe()
     // }
 
-    componentDidUpdate() {
-        this.renderDays();
-        // this.fetchEvents();
-    }
+    // componentDidUpdate() {
+    //     this.renderDays();
+    //     // this.fetchEvents();
+    // }
 
     fetchEvents() {
         axios.get('/api/events')
@@ -58,6 +55,7 @@ class Calendar extends Component {
                 data: events,
             })
         })
+        this.renderDays()
     }
 
     deleteEvent(e) {
@@ -159,8 +157,8 @@ class Calendar extends Component {
             daysInMonth,
 
         })
-        console.log('the store is: ', store.getState())
-        console.log('the component state is: ', this.state);
+        // console.log('the store is: ', store.getState())
+        // console.log('the component state is: ', this.state);
     }
 
     priorMonth(e) {

@@ -1,4 +1,3 @@
-import { createStore } from 'redux';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import ReactRouterDOM, { HashRouter, Link, Route, Switch } from 'react-router-dom';
@@ -7,9 +6,6 @@ import Calendar from './newCal'
 import Edit from './EditEvent';
 import Create from './Create';
 import store from './redux/store';
-
-
-// initial state and reducer
 
 
 const root = document.getElementById('root');

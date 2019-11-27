@@ -1,5 +1,5 @@
 import { createStore, applyMiddleware } from "redux";
-// import { logger } from "redux-logger";
+import { logger } from "redux-logger";
 import moment from "moment";
 
 const now = moment()
@@ -54,6 +54,6 @@ const reducer = (state = initialState, action) => {
 }
 
 
-const store = createStore(reducer);
+const store = createStore(reducer, applyMiddleware(logger));
 
 export default store;
