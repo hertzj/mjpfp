@@ -33,7 +33,7 @@ const reducer = (state = initialState, action) => {
                 currentDate: action.date,
                 currentDateInfo: action.dateInfo,
                 currentMonth: action.month,
-                daysInMonth: action.days
+                daysInMonth: action.daysInMonth
             }
             return nextMonth
         case EDIT_EVENT:

@@ -56781,6 +56781,7 @@ class Calendar extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     const dateInfo = nextMonth.toArray();
     const month = moment__WEBPACK_IMPORTED_MODULE_4___default()(nextMonth).get('month');
     const daysInMonth = moment__WEBPACK_IMPORTED_MODULE_4___default()(nextMonth).daysInMonth();
+    console.log(daysInMonth);
     _redux_store__WEBPACK_IMPORTED_MODULE_5__["default"].dispatch({
       type: 'monthChange',
       date,
@@ -56878,7 +56879,7 @@ const reducer = (state = initialState, action) => {
         currentDate: action.date,
         currentDateInfo: action.dateInfo,
         currentMonth: action.month,
-        daysInMonth: action.days
+        daysInMonth: action.daysInMonth
       };
       return nextMonth;
 

@@ -149,6 +149,7 @@ class Calendar extends Component {
         const dateInfo = nextMonth.toArray();
         const month = moment(nextMonth).get('month');
         const daysInMonth = moment(nextMonth).daysInMonth();
+        console.log(daysInMonth)
         store.dispatch({
             type: 'monthChange',
             date,
