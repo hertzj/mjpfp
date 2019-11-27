@@ -14,10 +14,11 @@ class Create extends Component {
         e.preventDefault();
         const title = document.querySelector('#title').value;
         const date = document.querySelector('#date').value;
+        const id = store.getState().events.length + 1
 
         store.dispatch({
             type: 'newEvents',
-            data: {title, date},
+            data: {id, title, date},
         })
 
         axios.post('/api/events', {title, date})

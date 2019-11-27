@@ -6,6 +6,7 @@ const now = moment()
 const NEW_EVENTS = 'newEvents';
 const MONTH_CHANGE = 'monthChange';
 const EDIT_EVENT = 'editEvent';
+const DELETE = 'deleteEvent'
 
 
 const initialState = {
@@ -18,12 +19,13 @@ const initialState = {
 }
 
 const reducer = (state = initialState, action) => {
+    let events = state.events;
     switch(action.type) {
         case NEW_EVENTS:
             // eslint-disable-next-line no-case-declarations
             let newEvents = {
                 ...state,
-                events: [...state.events, action.data],
+                events: [...state.events].concat(action.data)
             }
             return newEvents;
         case MONTH_CHANGE:
@@ -38,8 +40,8 @@ const reducer = (state = initialState, action) => {
             return nextMonth
         case EDIT_EVENT:
             // eslint-disable-next-line no-case-declarations
-            let id = action.id;
-            let events = state.events.filter(event => event.id !== id);
+            let id = Number(action.id);
+            events = events.filter(event => event.id !== id);
             events.push(action.data)
             // eslint-disable-next-line no-case-declarations
             let newState = {
@@ -47,6 +49,14 @@ const reducer = (state = initialState, action) => {
                 events,
             }
             return newState;
+        case DELETE:
+            let idDelete = Number(action.id);
+            events = events.filter(event => event.id !== idDelete)
+            let nextState = {
+                ...state,
+                events: events,
+            }
+            return nextState;
         default:
             return state
     }

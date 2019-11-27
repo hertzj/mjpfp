@@ -9,7 +9,7 @@ import store from './redux/store';
 const months = moment.months()
 
 class Calendar extends Component {
-    constructor(){
+    constructor(props){
         super();
         // this.state = {
         //     currentDate: moment(),
@@ -39,13 +39,17 @@ class Calendar extends Component {
     //     this.unsubscribe()
     // }
 
-    // componentDidUpdate() {
-    //     this.renderDays();
+    // componentDidUpdate(prevProps, prevState) {
+    //     // this.renderDays();
     //     // this.fetchEvents();
+    //     if (prevState.events.length !== this.state.events.length) {
+    //         console.log('hi')
+    //         this.renderDays();
+    //     }
     // }
 
-    fetchEvents() {
-        axios.get('/api/events')
+    async fetchEvents() {
+        await axios.get('/api/events')
         .then(response => {
             const events = response.data;
             // console.log(events)
@@ -58,11 +62,30 @@ class Calendar extends Component {
         this.renderDays()
     }
 
+    // fetchEvents() {
+    //     axios.get('/api/events')
+    //     .then(response => {
+    //         const events = response.data;
+    //         // console.log(events)
+    //         // this.setState({events}) // in reducer
+    //         store.dispatch({
+    //             type: 'newEvents',
+    //             data: events,
+    //         })
+    //     })
+    //     this.renderDays()
+    // }
+
     deleteEvent(e) {
-        const id = e.target.parentNode.dataset.id; // might have to do dataset.id
-        console.log('the deleted id is: ', id)
+        let id = e.target.parentNode.dataset.id; // might have to do dataset.id
+        // console.log('the deleted id is: ', id)
         axios.delete(`/api/events/${id}`);
-        this.fetchEvents()
+        store.dispatch({
+            type: 'deleteEvent',
+            id,
+        })
+        // this.fetchEvents();
+        // this.renderDays()
     }
 
     // eslint-disable-next-line complexity
@@ -89,7 +112,7 @@ class Calendar extends Component {
                     )
                 }
                 else if (j === firstDay && start === false) {
-                    start = true; // need to figure out month
+                    start = true; // make this the same as below so it will display events and such
                     days.push(
                         <td key={Math.random()} data-date={`${moment(this.state.currentDate).year()}-${this.state.currentMonth + 1}-${day}`}>
                             {shortMonth} { day } - { daysOfWeek[j] }
@@ -101,6 +124,7 @@ class Calendar extends Component {
                     // const data = `${this.state.currentMonth}-${day}-${moment(this.state.currentDate).year()}`
                     const data = `${moment(this.state.currentDate).year()}-${this.state.currentMonth + 1}-${day > 10? day : '0' + day}`
                     const dayEvent = this.state.events.filter(event => event.date === data)[0];
+                    // console.log(this.state.events)
                     days.push(
                         <td key={Math.random()} data-date={data} data-id={dayEvent ? dayEvent.id : ''}
                             className={dayEvent ? 'hasEvent' : ''}
@@ -149,7 +173,6 @@ class Calendar extends Component {
         const dateInfo = nextMonth.toArray();
         const month = moment(nextMonth).get('month');
         const daysInMonth = moment(nextMonth).daysInMonth();
-        console.log(daysInMonth)
         store.dispatch({
             type: 'monthChange',
             date,
@@ -186,6 +209,7 @@ class Calendar extends Component {
         const daysOfWeek = 'Sunday Monday Tuesday Wednesday Thursday Friday Saturday'.split(' ');
         // console.log('currentDateInfo from State: ', this.state.currentDateInfo);
         // console.log('currentDateInfo from State - sliced: ', this.state.currentDateInfo.slice(0, 2));
+        console.log(this.props.location)
         return (
             <div>
                 <button onClick={(e) => this.priorMonth(e)}>Prior Month</button>

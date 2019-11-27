@@ -56446,9 +56446,11 @@ class Create extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     e.preventDefault();
     const title = document.querySelector('#title').value;
     const date = document.querySelector('#date').value;
+    const id = _redux_store__WEBPACK_IMPORTED_MODULE_5__["default"].getState().events.length + 1;
     _redux_store__WEBPACK_IMPORTED_MODULE_5__["default"].dispatch({
       type: 'newEvents',
       data: {
+        id,
         title,
         date
       }
@@ -56527,7 +56529,7 @@ class Edit extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
 
   handleSubmit(e) {
     e.preventDefault();
-    const id = this.props.match.params.id;
+    const id = Number(this.props.match.params.id);
     console.log(id);
     const {
       title
@@ -56535,14 +56537,15 @@ class Edit extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     const date = document.querySelector('#date').value;
     console.log(date);
     const newData = {
+      id,
       title,
       date
-    };
-    _redux_store__WEBPACK_IMPORTED_MODULE_5__["default"].dispatch({
-      type: 'editEvent',
-      data: newData,
-      id
-    });
+    }; // store.dispatch({
+    //     type: 'editEvent',
+    //     data: newData,
+    //     id: id,
+    // })
+
     axios__WEBPACK_IMPORTED_MODULE_3___default.a.put(`/api/events/${id}`, newData); // need to include payload
 
     this.props.history.push('/');
@@ -56649,7 +56652,7 @@ __webpack_require__.r(__webpack_exports__);
 const months = moment__WEBPACK_IMPORTED_MODULE_4___default.a.months();
 
 class Calendar extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
-  constructor() {
+  constructor(props) {
     super(); // this.state = {
     //     currentDate: moment(),
     //     currentDateInfo: moment().toArray(),
@@ -56676,14 +56679,18 @@ class Calendar extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
   } // componentWillUnmount() {
   //     this.unsubscribe()
   // }
-  // componentDidUpdate() {
-  //     this.renderDays();
+  // componentDidUpdate(prevProps, prevState) {
+  //     // this.renderDays();
   //     // this.fetchEvents();
+  //     if (prevState.events.length !== this.state.events.length) {
+  //         console.log('hi')
+  //         this.renderDays();
+  //     }
   // }
 
 
-  fetchEvents() {
-    axios__WEBPACK_IMPORTED_MODULE_3___default.a.get('/api/events').then(response => {
+  async fetchEvents() {
+    await axios__WEBPACK_IMPORTED_MODULE_3___default.a.get('/api/events').then(response => {
       const events = response.data; // console.log(events)
       // this.setState({events}) // in reducer
 
@@ -56693,14 +56700,31 @@ class Calendar extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
       });
     });
     this.renderDays();
-  }
+  } // fetchEvents() {
+  //     axios.get('/api/events')
+  //     .then(response => {
+  //         const events = response.data;
+  //         // console.log(events)
+  //         // this.setState({events}) // in reducer
+  //         store.dispatch({
+  //             type: 'newEvents',
+  //             data: events,
+  //         })
+  //     })
+  //     this.renderDays()
+  // }
+
 
   deleteEvent(e) {
-    const id = e.target.parentNode.dataset.id; // might have to do dataset.id
+    let id = e.target.parentNode.dataset.id; // might have to do dataset.id
+    // console.log('the deleted id is: ', id)
 
-    console.log('the deleted id is: ', id);
     axios__WEBPACK_IMPORTED_MODULE_3___default.a.delete(`/api/events/${id}`);
-    this.fetchEvents();
+    _redux_store__WEBPACK_IMPORTED_MODULE_5__["default"].dispatch({
+      type: 'deleteEvent',
+      id
+    }); // this.fetchEvents();
+    // this.renderDays()
   } // eslint-disable-next-line complexity
 
 
@@ -56730,7 +56754,7 @@ class Calendar extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
           }) // might need some styling
           );
         } else if (j === firstDay && start === false) {
-          start = true; // need to figure out month
+          start = true; // make this the same as below so it will display events and such
 
           days.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", {
             key: Math.random(),
@@ -56740,7 +56764,8 @@ class Calendar extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
         } else {
           // const data = `${this.state.currentMonth}-${day}-${moment(this.state.currentDate).year()}`
           const data = `${moment__WEBPACK_IMPORTED_MODULE_4___default()(this.state.currentDate).year()}-${this.state.currentMonth + 1}-${day > 10 ? day : '0' + day}`;
-          const dayEvent = this.state.events.filter(event => event.date === data)[0];
+          const dayEvent = this.state.events.filter(event => event.date === data)[0]; // console.log(this.state.events)
+
           days.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", {
             key: Math.random(),
             "data-date": data,
@@ -56781,7 +56806,6 @@ class Calendar extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     const dateInfo = nextMonth.toArray();
     const month = moment__WEBPACK_IMPORTED_MODULE_4___default()(nextMonth).get('month');
     const daysInMonth = moment__WEBPACK_IMPORTED_MODULE_4___default()(nextMonth).daysInMonth();
-    console.log(daysInMonth);
     _redux_store__WEBPACK_IMPORTED_MODULE_5__["default"].dispatch({
       type: 'monthChange',
       date,
@@ -56815,6 +56839,7 @@ class Calendar extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     const daysOfWeek = 'Sunday Monday Tuesday Wednesday Thursday Friday Saturday'.split(' '); // console.log('currentDateInfo from State: ', this.state.currentDateInfo);
     // console.log('currentDateInfo from State - sliced: ', this.state.currentDateInfo.slice(0, 2));
 
+    console.log(this.props.location);
     return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
       onClick: e => this.priorMonth(e)
     }, "Prior Month"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("table", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("thead", {
@@ -56855,6 +56880,7 @@ const now = moment__WEBPACK_IMPORTED_MODULE_2___default()();
 const NEW_EVENTS = 'newEvents';
 const MONTH_CHANGE = 'monthChange';
 const EDIT_EVENT = 'editEvent';
+const DELETE = 'deleteEvent';
 const initialState = {
   currentDate: moment__WEBPACK_IMPORTED_MODULE_2___default()(),
   currentDateInfo: moment__WEBPACK_IMPORTED_MODULE_2___default()().toArray(),
@@ -56865,11 +56891,13 @@ const initialState = {
 };
 
 const reducer = (state = initialState, action) => {
+  let events = state.events;
+
   switch (action.type) {
     case NEW_EVENTS:
       // eslint-disable-next-line no-case-declarations
       let newEvents = { ...state,
-        events: [...state.events, action.data]
+        events: [...state.events].concat(action.data)
       };
       return newEvents;
 
@@ -56885,14 +56913,22 @@ const reducer = (state = initialState, action) => {
 
     case EDIT_EVENT:
       // eslint-disable-next-line no-case-declarations
-      let id = action.id;
-      let events = state.events.filter(event => event.id !== id);
+      let id = Number(action.id);
+      events = events.filter(event => event.id !== id);
       events.push(action.data); // eslint-disable-next-line no-case-declarations
 
       let newState = { ...state,
         events
       };
       return newState;
+
+    case DELETE:
+      let idDelete = Number(action.id);
+      events = events.filter(event => event.id !== idDelete);
+      let nextState = { ...state,
+        events: events
+      };
+      return nextState;
 
     default:
       return state;
