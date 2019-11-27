@@ -15,11 +15,16 @@ class Calendar extends Component {
     constructor(){
         super();
         this.state = {
+            currentDate: moment(),
             currentDateInfo: moment().toArray(),
             currentMonth: moment().get('month'),
+            daysInMonth: moment(moment()).daysInMonth(),
             selectedDate: new Date(),
             events: [],
         }
+        this.renderDays = this.renderDays.bind(this);
+        this.nextMonth = this.nextMonth.bind(this);
+        this.priorMonth = this.priorMonth.bind(this);
     }
 
     componentDidMount() {
@@ -30,8 +35,8 @@ class Calendar extends Component {
         this.renderDays();
     }
 
-    renderDays = () => {
-        let daysInMonth = moment().daysInMonth(this.state.currentMonth);
+    renderDays(){
+        let { daysInMonth } = this.state;
         let firstDay = moment(this.state.currentDateInfo.slice(0, 2)).day() // 0 is Sunday
         let cols = 7;
         let numRows = Math.ceil(daysInMonth / cols);
@@ -40,10 +45,13 @@ class Calendar extends Component {
         let start = false;
         const daysOfWeek = 'Sunday Monday Tuesday Wednesday Thursday Friday Saturday'.split(' ');
         let day = 1;
-        let shortMonth = moment.monthsShort()[this.state.currentMonth]
+        let shortMonth = moment.monthsShort()[this.state.currentMonth];
+        // console.log('the current Month is: ', this.state.currentMonth);
+        // console.log(`${shortMonth} has ${daysInMonth} days`)
 
         for (let i = 0; i < numRows; i++) {
             for (let j = 0; j < cols; j++) {
+                if (day > daysInMonth) break;
                 if (j < firstDay && start === false) {
                     days.push(
                         <td></td> // might need some styling
@@ -76,37 +84,52 @@ class Calendar extends Component {
         }
         start = false;
         day = 1;
-        return rows; // this should just return the rows. I will need to put them in a table
-        // and have table headers
+        return rows;
     }
 
-    nextMonth = () => {
+    nextMonth(e) {
+        e.preventDefault()
         const nextMonth = moment(this.state.currentDateInfo.slice(0, 2)).add(1, 'months');
         this.setState({
-            currentDateInfo: nextMonth
+            currentDate: nextMonth,
+            currentDateInfo: nextMonth.toArray(),
+            currentMonth: moment(nextMonth).get('month'),
+            daysInMonth: moment(nextMonth).daysInMonth(),
         })
     }
 
-    priorMonth = () => {
+    priorMonth(e) {
+        e.preventDefault();
         const lastMonth = moment(this.state.currentDateInfo.slice(0, 2)).subtract(1, 'months');
+        // console.log(moment(lastMonth).get('month'))
         this.setState({
-            currentDateInfo: lastMonth
+            currentDate: lastMonth,
+            currentDateInfo: lastMonth.toArray(),
+            currentMonth: moment(lastMonth).get('month'),
+            daysInMonth: moment(lastMonth).daysInMonth(),
         })   
     }
 
     render() {
         const daysOfWeek = 'Sunday Monday Tuesday Wednesday Thursday Friday Saturday'.split(' ');
+        // console.log('currentDateInfo from State: ', this.state.currentDateInfo);
+        // console.log('currentDateInfo from State - sliced: ', this.state.currentDateInfo.slice(0, 2));
         return (
-            <table>
-                <thead>
-                    <tr>
-                        { daysOfWeek.map(day => <th>{day}</th>) }
-                    </tr>
-                </thead>
-                <tbody>
-                    {this.renderDays()}
-                </tbody>
-            </table>
+            <div>
+                <button onClick={(e) => this.priorMonth(e)}>Prior Month</button>
+                <table>
+                    <thead>
+                        <tr>
+                            { daysOfWeek.map(day => <th>{day}</th>) }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {this.renderDays()}
+                    </tbody>
+                </table>
+                <button onClick={(e) => this.nextMonth(e)}>Next Month</button>
+            </div>
+
         )
     }
     
