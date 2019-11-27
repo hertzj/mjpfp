@@ -4,7 +4,6 @@ import ReactDOM from 'react-dom';
 import ReactRouterDOM, { HashRouter, Link, Route, Switch } from 'react-router-dom';
 import axios from 'axios';
 import moment from 'moment';
-import store from './redux/store';
 
 class Create extends Component {
     constructor(props) {
@@ -15,12 +14,6 @@ class Create extends Component {
         e.preventDefault();
         const title = document.querySelector('#title').value;
         const date = document.querySelector('#date').value;
-
-        store.dispatch({
-            type: 'newEvents',
-            data: {title, date},
-        })
-
         axios.post('/api/events', {title, date})
         const inputs = [...document.querySelectorAll('input')];
         inputs.forEach(input => {

@@ -6,7 +6,6 @@ import axios from 'axios';
 import Calendar from './newCal'
 import Edit from './EditEvent';
 import Create from './Create';
-import store from './redux/store';
 
 
 // initial state and reducer

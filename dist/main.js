@@ -50021,7 +50021,7 @@ if (false) {} else {
 /*!***************************************************************!*\
   !*** ./node_modules/react-router-dom/esm/react-router-dom.js ***!
   \***************************************************************/
-/*! exports provided: MemoryRouter, Prompt, Redirect, Route, Router, StaticRouter, Switch, __RouterContext, generatePath, matchPath, useHistory, useLocation, useParams, useRouteMatch, withRouter, BrowserRouter, HashRouter, Link, NavLink */
+/*! exports provided: BrowserRouter, HashRouter, Link, NavLink, MemoryRouter, Prompt, Redirect, Route, Router, StaticRouter, Switch, __RouterContext, generatePath, matchPath, useHistory, useLocation, useParams, useRouteMatch, withRouter */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -56417,6 +56417,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _redux_store__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./redux/store */ "./src/redux/store.js");
+
 
 
 
@@ -56433,6 +56435,13 @@ class Create extends react__WEBPACK_IMPORTED_MODULE_1__["Component"] {
     e.preventDefault();
     const title = document.querySelector('#title').value;
     const date = document.querySelector('#date').value;
+    _redux_store__WEBPACK_IMPORTED_MODULE_6__["default"].dispatch({
+      type: 'newEvents',
+      data: {
+        title,
+        date
+      }
+    });
     axios__WEBPACK_IMPORTED_MODULE_4___default.a.post('/api/events', {
       title,
       date
@@ -56483,6 +56492,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _redux_store__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./redux/store */ "./src/redux/store.js");
+
 
 
 
@@ -56518,6 +56529,11 @@ class Edit extends react__WEBPACK_IMPORTED_MODULE_1__["Component"] {
       title,
       date
     };
+    _redux_store__WEBPACK_IMPORTED_MODULE_6__["default"].dispatch({
+      type: 'editEvent',
+      data: newData,
+      id
+    });
     axios__WEBPACK_IMPORTED_MODULE_4___default.a.put(`/api/events/${id}`, newData); // need to include payload
 
     this.props.history.push('/');
@@ -56565,6 +56581,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _newCal__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./newCal */ "./src/newCal.jsx");
 /* harmony import */ var _EditEvent__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./EditEvent */ "./src/EditEvent.js");
 /* harmony import */ var _Create__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Create */ "./src/Create.jsx");
+/* harmony import */ var _redux_store__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./redux/store */ "./src/redux/store.js");
+
 
 
 
@@ -56616,35 +56634,31 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _redux_store__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./redux/store */ "./src/redux/store.js");
 
 
 
 
 
 
-const months = moment__WEBPACK_IMPORTED_MODULE_5___default.a.months(); // const fetchEvents = () => {
-//     axios.get('/api/events')
-//         .then(response => {
-//             const events = response.data;
-//             console.log(events)
-//             this.setState({events})
-//         })
-// }
+
+const months = moment__WEBPACK_IMPORTED_MODULE_5___default.a.months();
 
 class Calendar extends react__WEBPACK_IMPORTED_MODULE_1__["Component"] {
   constructor() {
-    super();
-    this.state = {
-      currentDate: moment__WEBPACK_IMPORTED_MODULE_5___default()(),
-      currentDateInfo: moment__WEBPACK_IMPORTED_MODULE_5___default()().toArray(),
-      currentMonth: moment__WEBPACK_IMPORTED_MODULE_5___default()().get('month'),
-      daysInMonth: moment__WEBPACK_IMPORTED_MODULE_5___default()(moment__WEBPACK_IMPORTED_MODULE_5___default()()).daysInMonth(),
-      selectedDate: new Date(),
-      events: [{
-        title: 'test',
-        date: '2019-10-20'
-      }]
-    };
+    super(); // this.state = {
+    //     currentDate: moment(),
+    //     currentDateInfo: moment().toArray(),
+    //     currentMonth: moment().get('month'),
+    //     daysInMonth: moment(moment()).daysInMonth(),
+    //     selectedDate: new Date(),
+    //     events: [{
+    //         title: 'test',
+    //         date: '2019-10-20',
+    //     }],
+    // };
+
+    this.state = _redux_store__WEBPACK_IMPORTED_MODULE_6__["default"].getState();
     this.renderDays = this.renderDays.bind(this);
     this.nextMonth = this.nextMonth.bind(this);
     this.priorMonth = this.priorMonth.bind(this);
@@ -56652,10 +56666,15 @@ class Calendar extends react__WEBPACK_IMPORTED_MODULE_1__["Component"] {
   }
 
   componentDidMount() {
+    this.unsubscribe = _redux_store__WEBPACK_IMPORTED_MODULE_6__["default"].subscribe(() => this.setState(_redux_store__WEBPACK_IMPORTED_MODULE_6__["default"].getState()));
     this.renderDays();
-    this.fetchEvents();
-    console.log(this.state.events);
-  }
+    this.fetchEvents(); // console.log(this.state.events)
+
+    console.log(this.state);
+  } // componentWillUnmount() {
+  //     this.unsubscribe()
+  // }
+
 
   componentDidUpdate() {
     this.renderDays(); // this.fetchEvents();
@@ -56663,10 +56682,12 @@ class Calendar extends react__WEBPACK_IMPORTED_MODULE_1__["Component"] {
 
   fetchEvents() {
     axios__WEBPACK_IMPORTED_MODULE_4___default.a.get('/api/events').then(response => {
-      const events = response.data;
-      console.log(events);
-      this.setState({
-        events
+      const events = response.data; // console.log(events)
+      // this.setState({events}) // in reducer
+
+      _redux_store__WEBPACK_IMPORTED_MODULE_6__["default"].dispatch({
+        type: 'newEvents',
+        data: events
       });
     });
   }
@@ -56701,12 +56722,15 @@ class Calendar extends react__WEBPACK_IMPORTED_MODULE_1__["Component"] {
         if (day > daysInMonth) break;
 
         if (j < firstDay && start === false) {
-          days.push(react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null) // might need some styling
+          days.push(react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", {
+            key: Math.random()
+          }) // might need some styling
           );
         } else if (j === firstDay && start === false) {
           start = true; // need to figure out month
 
           days.push(react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", {
+            key: Math.random(),
             "data-date": `${moment__WEBPACK_IMPORTED_MODULE_5___default()(this.state.currentDate).year()}-${this.state.currentMonth + 1}-${day}`
           }, shortMonth, " ", day, " - ", daysOfWeek[j]));
           day++;
@@ -56729,7 +56753,9 @@ class Calendar extends react__WEBPACK_IMPORTED_MODULE_1__["Component"] {
         }
       }
 
-      rows.push(react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("tr", null, days));
+      rows.push(react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("tr", {
+        key: Math.random()
+      }, days));
       days = [];
     }
 
@@ -56740,23 +56766,44 @@ class Calendar extends react__WEBPACK_IMPORTED_MODULE_1__["Component"] {
 
   nextMonth(e) {
     e.preventDefault();
-    const nextMonth = moment__WEBPACK_IMPORTED_MODULE_5___default()(this.state.currentDateInfo.slice(0, 2)).add(1, 'months');
-    this.setState({
-      currentDate: nextMonth,
-      currentDateInfo: nextMonth.toArray(),
-      currentMonth: moment__WEBPACK_IMPORTED_MODULE_5___default()(nextMonth).get('month'),
-      daysInMonth: moment__WEBPACK_IMPORTED_MODULE_5___default()(nextMonth).daysInMonth()
+    const nextMonth = moment__WEBPACK_IMPORTED_MODULE_5___default()(this.state.currentDateInfo.slice(0, 2)).add(1, 'months'); // console.log(nextMonth.toArray())
+    // this.setState({ // in reducer
+    //     currentDate: nextMonth,
+    //     currentDateInfo: nextMonth.toArray(),
+    //     currentMonth: moment(nextMonth).get('month'),
+    //     daysInMonth: moment(nextMonth).daysInMonth(),
+    // })
+
+    const date = nextMonth;
+    const dateInfo = nextMonth.toArray();
+    const month = moment__WEBPACK_IMPORTED_MODULE_5___default()(nextMonth).get('month');
+    const daysInMonth = moment__WEBPACK_IMPORTED_MODULE_5___default()(nextMonth).daysInMonth();
+    _redux_store__WEBPACK_IMPORTED_MODULE_6__["default"].dispatch({
+      type: 'monthChange',
+      date,
+      dateInfo,
+      month,
+      daysInMonth
     });
+    console.log('the store is: ', _redux_store__WEBPACK_IMPORTED_MODULE_6__["default"].getState());
+    console.log('the component state is: ', this.state);
   }
 
   priorMonth(e) {
     e.preventDefault();
     const lastMonth = moment__WEBPACK_IMPORTED_MODULE_5___default()(this.state.currentDateInfo.slice(0, 2)).subtract(1, 'months'); // console.log(moment(lastMonth).get('month'))
+    // this.setState({ // use prior month in reducer
+    //     currentDate: lastMonth,
+    //     currentDateInfo: lastMonth.toArray(),
+    //     currentMonth: moment(lastMonth).get('month'),
+    //     daysInMonth: moment(lastMonth).daysInMonth(),
+    // })
 
-    this.setState({
-      currentDate: lastMonth,
-      currentDateInfo: lastMonth.toArray(),
-      currentMonth: moment__WEBPACK_IMPORTED_MODULE_5___default()(lastMonth).get('month'),
+    _redux_store__WEBPACK_IMPORTED_MODULE_6__["default"].dispatch({
+      type: 'monthChange',
+      date: lastMonth,
+      dateInfo: lastMonth.toArray(),
+      month: moment__WEBPACK_IMPORTED_MODULE_5___default()(lastMonth).get('month'),
       daysInMonth: moment__WEBPACK_IMPORTED_MODULE_5___default()(lastMonth).daysInMonth()
     });
   }
@@ -56767,7 +56814,13 @@ class Calendar extends react__WEBPACK_IMPORTED_MODULE_1__["Component"] {
 
     return react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("button", {
       onClick: e => this.priorMonth(e)
-    }, "Prior Month"), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("table", null, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("thead", null, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("tr", null, daysOfWeek.map(day => react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", null, day)))), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("tbody", null, this.renderDays())), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("button", {
+    }, "Prior Month"), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("table", null, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("thead", {
+      key: Math.random()
+    }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("tr", {
+      key: Math.random()
+    }, daysOfWeek.map(day => react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", null, day)))), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("tbody", {
+      key: Math.random()
+    }, this.renderDays())), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("button", {
       onClick: e => this.nextMonth(e)
     }, "Next Month"));
   }
@@ -56775,6 +56828,74 @@ class Calendar extends react__WEBPACK_IMPORTED_MODULE_1__["Component"] {
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (Calendar);
+
+/***/ }),
+
+/***/ "./src/redux/store.js":
+/*!****************************!*\
+  !*** ./src/redux/store.js ***!
+  \****************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var redux__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_1__);
+ // import { logger } from "redux-logger";
+
+
+const now = moment__WEBPACK_IMPORTED_MODULE_1___default()();
+const NEW_EVENTS = 'newEvents';
+const MONTH_CHANGE = 'monthChange';
+const EDIT_EVENT = 'editEvent';
+const initialState = {
+  currentDate: moment__WEBPACK_IMPORTED_MODULE_1___default()(),
+  currentDateInfo: moment__WEBPACK_IMPORTED_MODULE_1___default()().toArray(),
+  currentMonth: moment__WEBPACK_IMPORTED_MODULE_1___default()().get('month'),
+  daysInMonth: moment__WEBPACK_IMPORTED_MODULE_1___default()(now).daysInMonth(),
+  // selectedDate
+  events: []
+};
+
+const reducer = (state = initialState, action) => {
+  switch (action.type) {
+    case NEW_EVENTS:
+      // eslint-disable-next-line no-case-declarations
+      let newEvents = { ...state,
+        events: [...state.events, action.data]
+      };
+      return newEvents;
+
+    case MONTH_CHANGE:
+      // eslint-disable-next-line no-case-declarations
+      let nextMonth = { ...state,
+        currentDate: action.date,
+        currentDateInfo: action.dateInfo,
+        currentMonth: action.month,
+        daysInMonth: action.days
+      };
+      return nextMonth;
+
+    case EDIT_EVENT:
+      // eslint-disable-next-line no-case-declarations
+      let id = action.id;
+      let events = state.events.filter(event => event.id !== id);
+      events.push(action.data); // eslint-disable-next-line no-case-declarations
+
+      let newState = { ...state,
+        events
+      };
+      return newState;
+
+    default:
+      return state;
+  }
+};
+
+const store = Object(redux__WEBPACK_IMPORTED_MODULE_0__["createStore"])(reducer);
+/* harmony default export */ __webpack_exports__["default"] = (store);
 
 /***/ })
 

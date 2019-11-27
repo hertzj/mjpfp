@@ -4,7 +4,6 @@ import ReactDOM from 'react-dom';
 import ReactRouterDOM, { HashRouter, Link, Route, Switch } from 'react-router-dom';
 import axios from 'axios';
 import moment from 'moment';
-import store from './redux/store';
 
 class Edit extends Component {
     constructor(props) {
@@ -30,11 +29,6 @@ class Edit extends Component {
             title,
             date,
         }
-        store.dispatch({
-            type: 'editEvent',
-            data: newData,
-            id,
-        })
 
         axios.put(`/api/events/${id}`, newData) // need to include payload
         this.props.history.push('/')
