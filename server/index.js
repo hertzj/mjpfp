@@ -1,8 +1,10 @@
 const { app } = require('./app.js');
-const { db } = require('./db/index.js');
-const PORT = 3000;
+const { db } = require('./db/seed.js');
+const PORT = 3000;;
+const { seed } = require('./db/seed.js')
 
-db.sync()
+db.sync({force: true})
+    .then(() => seed())
     .then(() => {
         app.listen(PORT, () => {
             console.log('listening on port: ', PORT)

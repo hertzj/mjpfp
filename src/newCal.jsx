@@ -8,7 +8,14 @@ import moment from 'moment';
 
 const months = moment.months()
 
-
+// const fetchEvents = () => {
+//     axios.get('/api/events')
+//         .then(response => {
+//             const events = response.data;
+//             console.log(events)
+//             this.setState({events})
+//         })
+// }
 
 
 class Calendar extends Component {
@@ -20,21 +27,45 @@ class Calendar extends Component {
             currentMonth: moment().get('month'),
             daysInMonth: moment(moment()).daysInMonth(),
             selectedDate: new Date(),
-            events: [],
+            events: [{
+                title: 'test',
+                date: '2019-10-20',
+            }],
         }
         this.renderDays = this.renderDays.bind(this);
         this.nextMonth = this.nextMonth.bind(this);
         this.priorMonth = this.priorMonth.bind(this);
+        this.fetchEvents = this.fetchEvents.bind(this);
     }
 
     componentDidMount() {
         this.renderDays();
+        this.fetchEvents();
+        console.log(this.state.events)
     }
 
     componentDidUpdate() {
         this.renderDays();
+        // this.fetchEvents();
     }
 
+    fetchEvents() {
+        axios.get('/api/events')
+        .then(response => {
+            const events = response.data;
+            console.log(events)
+            this.setState({events})
+        })
+    }
+
+    deleteEvent(e) {
+        const id = e.target.parentNode.dataset.id; // might have to do dataset.id
+        console.log('the deleted id is: ', id)
+        axios.delete(`/api/events/${id}`);
+        this.fetchEvents()
+    }
+
+    // eslint-disable-next-line complexity
     renderDays(){
         let { daysInMonth } = this.state;
         let firstDay = moment(this.state.currentDateInfo.slice(0, 2)).day() // 0 is Sunday
@@ -60,16 +91,32 @@ class Calendar extends Component {
                 else if (j === firstDay && start === false) {
                     start = true; // need to figure out month
                     days.push(
-                        <td>
+                        <td data-date={`${moment(this.state.currentDate).year()}-${this.state.currentMonth + 1}-${day}`}>
                             {shortMonth} { day } - { daysOfWeek[j] }
                         </td>
                     )
                     day++
                 }
                 else {
+                    // const data = `${this.state.currentMonth}-${day}-${moment(this.state.currentDate).year()}`
+                    const data = `${moment(this.state.currentDate).year()}-${this.state.currentMonth + 1}-${day > 10? day : '0' + day}`
+                    const dayEvent = this.state.events.filter(event => event.date === data)[0];
                     days.push(
-                        <td>
+                        <td key={Math.random()} data-date={data} data-id={dayEvent ? dayEvent.id : ''}
+                            className={dayEvent ? 'hasEvent' : ''}
+                            // onClick={!dayEvent ? '' : () => {}}
+                        >
                             {shortMonth} { day } - { daysOfWeek[j] }
+                            {
+                                !dayEvent ? '' :
+                                <span>{dayEvent.title}</span>
+                            }
+                            {!dayEvent ? '' : 
+                                <Link to={`/events/${dayEvent.id}`}>Edit me!</Link>
+                            }
+                            {!dayEvent ? '' :
+                                <button onClick={(e) => this.deleteEvent(e)}>Delete</button>
+                            }
                         </td>
                     )
                     day++
