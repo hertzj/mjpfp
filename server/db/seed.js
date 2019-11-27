@@ -24,9 +24,4 @@ const seed = async () => {
 
 }
 
-// db.sync({force: true})
-//     .then(() => seed())
-
-
-
 module.exports = { seed, db };

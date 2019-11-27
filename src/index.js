@@ -10,8 +10,6 @@ import store from './redux/store';
 
 const root = document.getElementById('root');
 
-// ReactDOM.render(<Calendar />, root)
-
 class App extends Component {
     render() {
         return (

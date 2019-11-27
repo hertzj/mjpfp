@@ -21,10 +21,8 @@ class Edit extends Component {
     async handleSubmit(e) {
         e.preventDefault()
         const id = Number(this.props.match.params.id);
-        // console.log(id)
         const { title } = this.state;
         const date = document.querySelector('#date').value;
-        // console.log(date) 
         const newData = {
             id,
             title,
@@ -42,8 +40,6 @@ class Edit extends Component {
     }
 
     render() {
-        // console.log(location)
-        // console.log(this.props.match.params.id)
         return (
             <form onSubmit={(e) => this.handleSubmit(e)}>
                 <h4>Edit Event</h4>

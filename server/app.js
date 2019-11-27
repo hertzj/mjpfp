@@ -14,7 +14,6 @@ app.get('/', (req, res, next) => {
 app.get('/api/events', (req, res, next) => {
     Event.findAll()
         .then(events => {
-            // console.log(events);
             res.send(events)
         })
         .catch(e => console.log('error getting events', e))
@@ -49,7 +48,6 @@ app.put('/api/events/:id', (req, res, next) => {
 
 app.delete('/api/events/:id', (req, res, next) => {
     const { id } = req.params;
-    console.log('destroyed id is: ', id)
     Event.destroy({
         where: {
             id,

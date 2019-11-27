@@ -14,7 +14,6 @@ const initialState = {
     currentDateInfo: moment().toArray(),
     currentMonth: moment().get('month'),
     daysInMonth: moment(now).daysInMonth(),
-    // selectedDate
     events: [],
 }
 

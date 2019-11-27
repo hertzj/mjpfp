@@ -32,7 +32,6 @@ class Calendar extends Component {
         .then(response => {
             const events = response.data;
             console.log('events from fetchEvents', events)
-            // this.setState({events}) // in reducer
             store.dispatch({
                 type: 'newEvents',
                 data: events,
@@ -43,15 +42,12 @@ class Calendar extends Component {
 
 
     deleteEvent(e) {
-        let id = e.target.parentNode.dataset.id; // might have to do dataset.id
-        // console.log('the deleted id is: ', id)
+        let id = e.target.parentNode.dataset.id;
         axios.delete(`/api/events/${id}`);
         store.dispatch({
             type: 'deleteEvent',
             id,
         })
-        // this.fetchEvents();
-        // this.renderDays()
     }
 
     // eslint-disable-next-line complexity
@@ -72,20 +68,16 @@ class Calendar extends Component {
                 if (day > daysInMonth) break;
                 if (j < firstDay && start === false) {
                     days.push(
-                        <td key={Math.random()}></td> // might need some styling
+                        <td key={Math.random()}></td>
                     )
                 }
                 else if (j === firstDay && start === false) {
-                    start = true; // make this the same as below so it will display events and such
+                    start = true;
                     const data = `${moment(this.state.currentDate).year()}-${this.state.currentMonth + 1}-${day > 10? day : '0' + day}`
                     const dayEvent = this.state.events.filter(event => event.date === data)[0];
                     days.push(
-                        // <td key={Math.random()} data-date={`${moment(this.state.currentDate).year()}-${this.state.currentMonth + 1}-${day}`}>
-                        //     {shortMonth} { day } - { daysOfWeek[j] }
-                        // </td>
                         <td key={Math.random()} data-date={data} data-id={dayEvent ? dayEvent.id : ''}
                         className={dayEvent ? 'hasEvent' : ''}
-                        // onClick={!dayEvent ? '' : () => {}}
                     >
                         {shortMonth} { day } - { daysOfWeek[j] }
                         {
@@ -103,14 +95,11 @@ class Calendar extends Component {
                     day++
                 }
                 else {
-                    // const data = `${this.state.currentMonth}-${day}-${moment(this.state.currentDate).year()}`
                     const data = `${moment(this.state.currentDate).year()}-${this.state.currentMonth + 1}-${day > 10? day : '0' + day}`
                     const dayEvent = this.state.events.filter(event => event.date === data)[0];
-                    // console.log(this.state.events)
                     days.push(
                         <td key={Math.random()} data-date={data} data-id={dayEvent ? dayEvent.id : ''}
                             className={dayEvent ? 'hasEvent' : ''}
-                            // onClick={!dayEvent ? '' : () => {}}
                         >
                             {shortMonth} { day } - { daysOfWeek[j] }
                             {
@@ -144,13 +133,6 @@ class Calendar extends Component {
     nextMonth(e) {
         e.preventDefault()
         const nextMonth = moment(this.state.currentDateInfo.slice(0, 2)).add(1, 'months');
-        // console.log(nextMonth.toArray())
-        // this.setState({ // in reducer
-        //     currentDate: nextMonth,
-        //     currentDateInfo: nextMonth.toArray(),
-        //     currentMonth: moment(nextMonth).get('month'),
-        //     daysInMonth: moment(nextMonth).daysInMonth(),
-        // })
         const date = nextMonth;
         const dateInfo = nextMonth.toArray();
         const month = moment(nextMonth).get('month');
@@ -163,20 +145,11 @@ class Calendar extends Component {
             daysInMonth,
 
         })
-        // console.log('the store is: ', store.getState())
-        // console.log('the component state is: ', this.state);
     }
 
     priorMonth(e) {
         e.preventDefault();
         const lastMonth = moment(this.state.currentDateInfo.slice(0, 2)).subtract(1, 'months');
-        // console.log(moment(lastMonth).get('month'))
-        // this.setState({ // use prior month in reducer
-        //     currentDate: lastMonth,
-        //     currentDateInfo: lastMonth.toArray(),
-        //     currentMonth: moment(lastMonth).get('month'),
-        //     daysInMonth: moment(lastMonth).daysInMonth(),
-        // })
         store.dispatch({
             type: 'monthChange',
             date: lastMonth,
@@ -189,9 +162,6 @@ class Calendar extends Component {
 
     render() {
         const daysOfWeek = 'Sunday Monday Tuesday Wednesday Thursday Friday Saturday'.split(' ');
-        // console.log('currentDateInfo from State: ', this.state.currentDateInfo);
-        // console.log('currentDateInfo from State - sliced: ', this.state.currentDateInfo.slice(0, 2));
-        // console.log(this.props.location)
         return (
             <div>
                 <button onClick={(e) => this.priorMonth(e)}>Prior Month</button>
