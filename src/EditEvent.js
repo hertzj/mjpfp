@@ -18,25 +18,26 @@ class Edit extends Component {
         this.setState({[field]: ev.target.value})
     }
 
-    handleSubmit(e) {
+    async handleSubmit(e) {
         e.preventDefault()
         const id = Number(this.props.match.params.id);
-        console.log(id)
+        // console.log(id)
         const { title } = this.state;
         const date = document.querySelector('#date').value;
-        console.log(date) 
+        // console.log(date) 
         const newData = {
             id,
             title,
             date,
         }
-        // store.dispatch({
-        //     type: 'editEvent',
-        //     data: newData,
-        //     id: id,
-        // })
+        await axios.put(`/api/events/${id}`, newData)
+        store.dispatch({
+            type: 'editEvent',
+            data: newData,
+            id: id,
+        })
 
-        axios.put(`/api/events/${id}`, newData) // need to include payload
+        
         this.props.history.push('/')
     }
 

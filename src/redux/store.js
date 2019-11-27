@@ -25,7 +25,8 @@ const reducer = (state = initialState, action) => {
             // eslint-disable-next-line no-case-declarations
             let newEvents = {
                 ...state,
-                events: [...state.events].concat(action.data)
+                // events: [...state.events].concat(action.data)
+                events: action.data,
             }
             return newEvents;
         case MONTH_CHANGE:

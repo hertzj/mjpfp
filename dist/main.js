@@ -56527,27 +56527,26 @@ class Edit extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     });
   }
 
-  handleSubmit(e) {
+  async handleSubmit(e) {
     e.preventDefault();
-    const id = Number(this.props.match.params.id);
-    console.log(id);
+    const id = Number(this.props.match.params.id); // console.log(id)
+
     const {
       title
     } = this.state;
-    const date = document.querySelector('#date').value;
-    console.log(date);
+    const date = document.querySelector('#date').value; // console.log(date) 
+
     const newData = {
       id,
       title,
       date
-    }; // store.dispatch({
-    //     type: 'editEvent',
-    //     data: newData,
-    //     id: id,
-    // })
-
-    axios__WEBPACK_IMPORTED_MODULE_3___default.a.put(`/api/events/${id}`, newData); // need to include payload
-
+    };
+    await axios__WEBPACK_IMPORTED_MODULE_3___default.a.put(`/api/events/${id}`, newData);
+    _redux_store__WEBPACK_IMPORTED_MODULE_5__["default"].dispatch({
+      type: 'editEvent',
+      data: newData,
+      id: id
+    });
     this.props.history.push('/');
   }
 
@@ -56653,18 +56652,7 @@ const months = moment__WEBPACK_IMPORTED_MODULE_4___default.a.months();
 
 class Calendar extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
   constructor(props) {
-    super(); // this.state = {
-    //     currentDate: moment(),
-    //     currentDateInfo: moment().toArray(),
-    //     currentMonth: moment().get('month'),
-    //     daysInMonth: moment(moment()).daysInMonth(),
-    //     selectedDate: new Date(),
-    //     events: [{
-    //         title: 'test',
-    //         date: '2019-10-20',
-    //     }],
-    // };
-
+    super();
     this.state = _redux_store__WEBPACK_IMPORTED_MODULE_5__["default"].getState();
     this.renderDays = this.renderDays.bind(this);
     this.nextMonth = this.nextMonth.bind(this);
@@ -56675,24 +56663,17 @@ class Calendar extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
   componentDidMount() {
     this.unsubscribe = _redux_store__WEBPACK_IMPORTED_MODULE_5__["default"].subscribe(() => this.setState(_redux_store__WEBPACK_IMPORTED_MODULE_5__["default"].getState()));
     this.renderDays();
-    this.fetchEvents(); // console.log(this.state.events)
-  } // componentWillUnmount() {
-  //     this.unsubscribe()
-  // }
-  // componentDidUpdate(prevProps, prevState) {
-  //     // this.renderDays();
-  //     // this.fetchEvents();
-  //     if (prevState.events.length !== this.state.events.length) {
-  //         console.log('hi')
-  //         this.renderDays();
-  //     }
-  // }
+    this.fetchEvents();
+  }
 
+  componentWillUnmount() {
+    this.unsubscribe();
+  }
 
   async fetchEvents() {
     await axios__WEBPACK_IMPORTED_MODULE_3___default.a.get('/api/events').then(response => {
-      const events = response.data; // console.log(events)
-      // this.setState({events}) // in reducer
+      const events = response.data;
+      console.log('events from fetchEvents', events); // this.setState({events}) // in reducer
 
       _redux_store__WEBPACK_IMPORTED_MODULE_5__["default"].dispatch({
         type: 'newEvents',
@@ -56700,20 +56681,7 @@ class Calendar extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
       });
     });
     this.renderDays();
-  } // fetchEvents() {
-  //     axios.get('/api/events')
-  //     .then(response => {
-  //         const events = response.data;
-  //         // console.log(events)
-  //         // this.setState({events}) // in reducer
-  //         store.dispatch({
-  //             type: 'newEvents',
-  //             data: events,
-  //         })
-  //     })
-  //     this.renderDays()
-  // }
-
+  }
 
   deleteEvent(e) {
     let id = e.target.parentNode.dataset.id; // might have to do dataset.id
@@ -56741,8 +56709,7 @@ class Calendar extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     let start = false;
     const daysOfWeek = 'Sunday Monday Tuesday Wednesday Thursday Friday Saturday'.split(' ');
     let day = 1;
-    let shortMonth = moment__WEBPACK_IMPORTED_MODULE_4___default.a.monthsShort()[this.state.currentMonth]; // console.log('the current Month is: ', this.state.currentMonth);
-    // console.log(`${shortMonth} has ${daysInMonth} days`)
+    let shortMonth = moment__WEBPACK_IMPORTED_MODULE_4___default.a.monthsShort()[this.state.currentMonth];
 
     for (let i = 0; i < numRows; i++) {
       for (let j = 0; j < cols; j++) {
@@ -56756,10 +56723,22 @@ class Calendar extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
         } else if (j === firstDay && start === false) {
           start = true; // make this the same as below so it will display events and such
 
-          days.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", {
+          const data = `${moment__WEBPACK_IMPORTED_MODULE_4___default()(this.state.currentDate).year()}-${this.state.currentMonth + 1}-${day > 10 ? day : '0' + day}`;
+          const dayEvent = this.state.events.filter(event => event.date === data)[0];
+          days.push( // <td key={Math.random()} data-date={`${moment(this.state.currentDate).year()}-${this.state.currentMonth + 1}-${day}`}>
+          //     {shortMonth} { day } - { daysOfWeek[j] }
+          // </td>
+          react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", {
             key: Math.random(),
-            "data-date": `${moment__WEBPACK_IMPORTED_MODULE_4___default()(this.state.currentDate).year()}-${this.state.currentMonth + 1}-${day}`
-          }, shortMonth, " ", day, " - ", daysOfWeek[j]));
+            "data-date": data,
+            "data-id": dayEvent ? dayEvent.id : '',
+            className: dayEvent ? 'hasEvent' : '' // onClick={!dayEvent ? '' : () => {}}
+
+          }, shortMonth, " ", day, " - ", daysOfWeek[j], !dayEvent ? '' : react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null, dayEvent.title), !dayEvent ? '' : react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_2__["Link"], {
+            to: `/events/${dayEvent.id}`
+          }, "Edit me!"), !dayEvent ? '' : react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+            onClick: e => this.deleteEvent(e)
+          }, "Delete")));
           day++;
         } else {
           // const data = `${this.state.currentMonth}-${day}-${moment(this.state.currentDate).year()}`
@@ -56838,8 +56817,8 @@ class Calendar extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
   render() {
     const daysOfWeek = 'Sunday Monday Tuesday Wednesday Thursday Friday Saturday'.split(' '); // console.log('currentDateInfo from State: ', this.state.currentDateInfo);
     // console.log('currentDateInfo from State - sliced: ', this.state.currentDateInfo.slice(0, 2));
+    // console.log(this.props.location)
 
-    console.log(this.props.location);
     return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
       onClick: e => this.priorMonth(e)
     }, "Prior Month"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("table", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("thead", {
@@ -56897,7 +56876,8 @@ const reducer = (state = initialState, action) => {
     case NEW_EVENTS:
       // eslint-disable-next-line no-case-declarations
       let newEvents = { ...state,
-        events: [...state.events].concat(action.data)
+        // events: [...state.events].concat(action.data)
+        events: action.data
       };
       return newEvents;
 
